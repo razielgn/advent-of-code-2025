@@ -1,6 +1,4 @@
 mod day1;
-use aoc_runner_derive::aoc_lib;
+mod day2;
 
-// pub mod day01;
-
-aoc_lib! { year = 2025 }
+aoc_runner_derive::aoc_lib! { year = 2025 }
