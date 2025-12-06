@@ -12,6 +12,7 @@ bench = false
 aoc-runner = "~0.3"
 aoc-runner-derive = "~0.3"
 itertools = "0.14.0"
+ndarray = "0.17.1"
 rayon = "1.11.0"
 
 [profile.release]
