@@ -15,11 +15,11 @@
 
   commonArgs = {
     inherit src;
-
-    doCheck = false;
   };
 
-  cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+  cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
+    doCheck = false;
+  });
 in {
   clippy = craneLib.cargoClippy (commonArgs
     // {
