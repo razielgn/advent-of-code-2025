@@ -45,19 +45,21 @@ impl<T: PartialOrd + Copy + Ord + Clone> RangeSet<T> {
         //  Included(0)  Included(0)   Included(1)   Included(1)   Included(2)  Included(2)
         // [             0,                          1,                         2]
 
-        let start = match self.contents.binary_search_by(|x| x.end.cmp(&range.start)) {
-            Ok(idx) | Err(idx) => Bound::Included(idx),
-        };
+        let start =
+            match self.contents.binary_search_by(|x| x.end.cmp(&range.start)) {
+                Ok(idx) | Err(idx) => Bound::Included(idx),
+            };
 
         // searching for end:
         //  Err(0)       Ok(0)         Err(1)        Ok(1)         Err(2)      Ok(2)
         //  Excluded(0)  Included(0)   Excluded(1)   Included(1)   Excluded(2) Included(2)
         // [             0,                          1,                        2]
 
-        let end = match self.contents.binary_search_by(|x| x.start.cmp(&range.end)) {
-            Ok(idx) => Bound::Included(idx),
-            Err(idx) => Bound::Excluded(idx),
-        };
+        let end =
+            match self.contents.binary_search_by(|x| x.start.cmp(&range.end)) {
+                Ok(idx) => Bound::Included(idx),
+                Err(idx) => Bound::Excluded(idx),
+            };
 
         let mut new_range = range.clone();
 
@@ -88,7 +90,9 @@ impl<T: PartialOrd + Copy + Ord + Default> From<Vec<Range<T>>> for RangeSet<T> {
 }
 
 #[cfg(test)]
-impl<T: PartialOrd + Copy + Ord + Clone + Default> FromIterator<Range<T>> for RangeSet<T> {
+impl<T: PartialOrd + Copy + Ord + Clone + Default> FromIterator<Range<T>>
+    for RangeSet<T>
+{
     fn from_iter<I: IntoIterator<Item = Range<T>>>(iter: I) -> Self {
         let mut range = Self::default();
 
@@ -115,7 +119,8 @@ mod tests {
         assert_eq!((0..5).merge_range(&(5..10)), Some(0..10));
         assert_eq!((430..888).merge_range(&(602..835)), Some(430..888));
         assert_eq!(
-            (usize::MAX - 1..usize::MAX).merge_range(&(usize::MAX - 2..usize::MAX - 1)),
+            (usize::MAX - 1..usize::MAX)
+                .merge_range(&(usize::MAX - 2..usize::MAX - 1)),
             Some(usize::MAX - 2..usize::MAX)
         );
     }
@@ -192,12 +197,20 @@ mod tests {
         );
 
         assert_eq!(
-            RangeSet::from(vec![100..200, 300..400, 500..600, 150..350, 450..550]).contents,
+            RangeSet::from(vec![
+                100..200,
+                300..400,
+                500..600,
+                150..350,
+                450..550
+            ])
+            .contents,
             vec![100..400, 450..600]
         );
 
         assert_eq!(
-            RangeSet::from(vec![10..20, 1..2, 2..3, 3..4, 1..6, 4..5, 5..6]).contents,
+            RangeSet::from(vec![10..20, 1..2, 2..3, 3..4, 1..6, 4..5, 5..6])
+                .contents,
             vec![1..6, 10..20]
         );
         assert_eq!(
@@ -206,7 +219,8 @@ mod tests {
         );
 
         assert_eq!(
-            RangeSet::from(vec![1..5, 10..15, 20..25, 2..3, 12..13, 22..23]).contents,
+            RangeSet::from(vec![1..5, 10..15, 20..25, 2..3, 12..13, 22..23])
+                .contents,
             vec![1..5, 10..15, 20..25]
         );
 

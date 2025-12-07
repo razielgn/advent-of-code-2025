@@ -33,8 +33,9 @@ fn part2(input: &[i32]) -> usize {
         .iter()
         .fold((0, DIAL_START), |(count, dial), movement| {
             let over_dial = dial + *movement;
-            let mut next_count =
-                count + usize::try_from((over_dial / DIAL_WRAP).unsigned_abs()).unwrap();
+            let mut next_count = count
+                + usize::try_from((over_dial / DIAL_WRAP).unsigned_abs())
+                    .unwrap();
 
             if dial != 0 && over_dial <= 0 {
                 next_count += 1;

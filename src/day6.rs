@@ -45,7 +45,9 @@ fn parse_grid_horizontally(input: &str) -> (Grid, Ops) {
     (grid, parse_ops(input))
 }
 
-fn transpose<T>(mut iters: Vec<std::vec::IntoIter<T>>) -> impl Iterator<Item = Vec<T>> {
+fn transpose<T>(
+    mut iters: Vec<std::vec::IntoIter<T>>,
+) -> impl Iterator<Item = Vec<T>> {
     std::iter::from_fn(move || iters.iter_mut().map(Iterator::next).collect())
 }
 
@@ -73,14 +75,14 @@ fn parse_grid_vertically(input: &str) -> (Grid, Ops) {
             continue;
         }
 
-        let n = col
-            .iter()
-            .filter(|c| !c.is_ascii_whitespace())
-            .fold(0u64, |mut acc, c| {
+        let n = col.iter().filter(|c| !c.is_ascii_whitespace()).fold(
+            0u64,
+            |mut acc, c| {
                 acc *= 10;
                 acc += u64::from(c.to_digit(10).unwrap());
                 acc
-            });
+            },
+        );
 
         curr_col.push(n);
     }
