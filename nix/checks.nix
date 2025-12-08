@@ -17,9 +17,10 @@
     inherit src;
   };
 
-  cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
-    doCheck = false;
-  });
+  cargoArtifacts = craneLib.buildDepsOnly (commonArgs
+    // {
+      doCheck = false;
+    });
 in {
   clippy = craneLib.cargoClippy (commonArgs
     // {
