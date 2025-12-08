@@ -3,6 +3,7 @@ result
 .direnv
 .DS_Store
 
+perf.data*
 
 # Added by cargo
 #

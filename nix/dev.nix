@@ -2,6 +2,7 @@
   actionlint,
   cargo-aoc,
   cargo-outdated,
+  cargo-flamegraph,
   mkShell,
   python3,
   rustToolchain,
@@ -11,6 +12,7 @@ mkShell {
     actionlint
     cargo-aoc
     cargo-outdated
+    cargo-flamegraph
     rustToolchain
     (python3.withPackages (ps:
       with ps; [

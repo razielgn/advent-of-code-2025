@@ -24,3 +24,4 @@ rand_chacha = "0.9"
 
 [profile.release]
 lto = "fat"
+debug = true

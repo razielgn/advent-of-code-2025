@@ -34,7 +34,7 @@ impl<'a> Decoration<'a> {
             .iter()
             .tuple_combinations()
             .map(|(jb1, jb2)| (jb1, jb2, jb1.distance(jb2)))
-            .sorted_by_key(|(_jb1, _jb2, distance)| *distance)
+            .sorted_unstable_by_key(|(_jb1, _jb2, distance)| *distance)
             .take(connections)
         {
             decoration.attach(jb, nearest_jb);
