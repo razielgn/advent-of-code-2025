@@ -22,6 +22,16 @@ rustc-hash = "2.1.1"
 rand = "0.9"
 rand_chacha = "0.9"
 
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
+
+[profile.debugging]
+inherits = "dev"
+debug = true
+
 [profile.release]
 lto = "fat"
 debug = true
