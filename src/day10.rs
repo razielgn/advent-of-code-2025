@@ -1,9 +1,8 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
-use ndarray::prelude::*;
 use rayon::prelude::*;
 
-type Lights = Array1<u8>;
+type Lights = u16;
 
 #[derive(Debug)]
 struct Machine {
@@ -21,7 +20,7 @@ impl Machine {
                 for combinations in
                     self.button_wiring_schematics.iter().combinations(k)
                 {
-                    let mut lights = self.lights_out();
+                    let mut lights = 0;
 
                     for (counter, combination) in combinations
                         .iter()
@@ -41,10 +40,6 @@ impl Machine {
             .min()
             .unwrap()
     }
-
-    fn lights_out(&self) -> Lights {
-        Lights::zeros(self.indicator_light_diagram.len())
-    }
 }
 
 #[aoc_generator(day10)]
@@ -55,12 +50,12 @@ fn parse(input: &str) -> Vec<Machine> {
         .map(|line| {
             let (indicator_light_diagram, rest) = line.split_once("] ").unwrap();
 
-            let indicator_light_diagram = Lights::from_iter(
-                indicator_light_diagram
-                    .trim_start_matches('[')
-                    .chars()
-                    .map(|c| u8::from(c == '#')),
-            );
+            let indicator_light_diagram = indicator_light_diagram
+                .trim_start_matches('[')
+                .chars()
+                .enumerate()
+                .filter(|(_idx, c)| *c == '#')
+                .fold(0u16, |acc, (idx, _c)| acc | 0b1 << idx);
 
             let (button_wiring_schematics, joltage_reqs) =
                 rest.split_once(" {").unwrap();
@@ -72,13 +67,7 @@ fn parse(input: &str) -> Vec<Machine> {
                         .trim_end_matches(')')
                         .split(',')
                         .map(|n| n.parse::<usize>().unwrap())
-                        .fold(
-                            Lights::zeros(indicator_light_diagram.len()),
-                            |mut acc, pos| {
-                                acc[pos] = 1;
-                                acc
-                            },
-                        )
+                        .fold(0, |acc, pos| acc | 0b1 << pos)
                 })
                 .collect();
 
