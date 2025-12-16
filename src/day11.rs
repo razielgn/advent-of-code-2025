@@ -6,7 +6,7 @@ type Inventory = FxHashMap<String, Vec<String>>;
 
 #[aoc_generator(day11)]
 fn parse(input: &str) -> Inventory {
-    let mut inventory: FxHashMap<_, _> = input
+    input
         .trim_ascii()
         .lines()
         .map(|line| {
@@ -14,10 +14,8 @@ fn parse(input: &str) -> Inventory {
 
             (src.to_owned(), dests.split(' ').map(Into::into).collect())
         })
-        .collect();
-
-    inventory.insert("out".to_owned(), vec![]);
-    inventory
+        .chain([("out".to_owned(), vec![])])
+        .collect()
 }
 
 #[aoc(day11, part1)]
