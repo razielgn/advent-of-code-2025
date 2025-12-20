@@ -1,6 +1,7 @@
 use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
 use rayon::prelude::*;
+use std::iter;
 
 type Lights = u16;
 
@@ -8,8 +9,6 @@ type Lights = u16;
 struct Machine {
     indicator_light_diagram: Lights,
     button_wiring_schematics: Vec<Lights>,
-
-    #[allow(dead_code)]
     joltage_reqs: Vec<u16>,
 }
 
@@ -40,6 +39,59 @@ impl Machine {
             .min()
             .unwrap()
     }
+
+    fn fewest_button_presses_joltage(&self) -> u64 {
+        use z3::{Optimize, SatResult, ast::Int};
+
+        let opt = Optimize::new();
+
+        let vars = (0..self.button_wiring_schematics.len())
+            .map(|idx| Int::fresh_const(&format!("n{idx}")))
+            .collect_vec();
+
+        for var in &vars {
+            opt.assert(&var.ge(0));
+        }
+
+        for (joltage_idx, joltage) in self.joltage_reqs.iter().enumerate() {
+            let mut equation = Int::from(0);
+
+            for (button_idx, button) in
+                self.button_wiring_schematics.iter().enumerate()
+            {
+                if iter_set_bits(*button).contains(&joltage_idx) {
+                    equation += vars.get(button_idx).unwrap();
+                }
+            }
+
+            opt.assert(&equation.eq(u32::from(*joltage)));
+        }
+
+        let sum_of_vars = vars.iter().sum::<Int>();
+
+        opt.minimize(&sum_of_vars);
+
+        assert_eq!(SatResult::Sat, opt.check(&[]));
+
+        opt.get_model()
+            .unwrap()
+            .eval(&sum_of_vars, true)
+            .unwrap()
+            .as_u64()
+            .unwrap()
+    }
+}
+
+fn iter_set_bits(n: u16) -> impl Iterator<Item = usize> {
+    iter::successors(
+        Some(n),
+        |&state| {
+            if state == 0 { None } else { Some(state >> 1) }
+        },
+    )
+    .enumerate()
+    .filter(|(_idx, b)| (b & 1) == 1)
+    .map(|(idx, _)| idx)
 }
 
 #[aoc_generator(day10)]
@@ -92,8 +144,11 @@ fn part1(input: &[Machine]) -> usize {
 }
 
 #[aoc(day10, part2)]
-fn part2(_input: &[Machine]) -> String {
-    todo!()
+fn part2(input: &[Machine]) -> u64 {
+    input
+        .par_iter()
+        .map(Machine::fewest_button_presses_joltage)
+        .sum()
 }
 
 #[cfg(test)]
@@ -114,8 +169,23 @@ mod tests {
         assert_eq!(part1(&parse(include_str!("../input/2025/day10.txt"))), 538);
     }
 
-    // #[test]
-    // fn part2_example() {
-    //     assert_eq!(part2(&parse(EXAMPLE)), "<RESULT>");
-    // }
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(&parse(EXAMPLE)), 33);
+    }
+
+    #[test]
+    fn solution2() {
+        assert_eq!(
+            part2(&parse(include_str!("../input/2025/day10.txt"))),
+            20_298
+        );
+    }
+
+    #[test]
+    fn iter_set_bits_() {
+        assert_eq!(Vec::<usize>::new(), iter_set_bits(0).collect_vec());
+        assert_eq!(vec![3], iter_set_bits(8).collect_vec());
+        assert_eq!(vec![0, 1, 2, 4, 5], iter_set_bits(55).collect_vec());
+    }
 }
