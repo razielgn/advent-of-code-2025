@@ -1,6 +1,9 @@
 {
+  clang,
   craneLib,
   lib,
+  pkg-config,
+  z3,
 }: let
   src = lib.cleanSourceWith {
     src = craneLib.path ../.;
@@ -15,6 +18,18 @@
 
   commonArgs = {
     inherit src;
+
+    nativeBuildInputs = [
+      pkg-config
+    ];
+
+    buildInputs = [
+      z3
+    ];
+
+    env = {
+      LIBCLANG_PATH = "${lib.getLib clang.cc}/lib";
+    };
   };
 
   cargoArtifacts = craneLib.buildDepsOnly (commonArgs
